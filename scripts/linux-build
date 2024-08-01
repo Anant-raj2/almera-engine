@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [-d ../vendor/bin]; then
+if [-d ./bin]; then
   echo "Changing to bin directory"
-  cd ../vendor/bin
+  cd ./bin
 else
   echo "Making a bin output directory"
-  mkdir ../vendor/bin
+  mkdir ./bin
   echo "Changing to bin directory"
-  cd ../vendor/bin
+  cd ./bin
 fi
-cmake ../../
+cmake ..
 make
