@@ -1,17 +1,21 @@
 #pragma once
+#include "SDL_render.h"
 #include <SDL_surface.h>
 #include <SDL_video.h>
+#include <cstdlib>
 
 class Handler {
-  SDL_Surface *m_background;
   SDL_Window *m_window;
-  static bool isRunning;
+  SDL_Renderer *m_renderer;
+  bool isRunning;
 
 private:
   bool init();
   void close();
+  bool drawBoard();
 
 public:
   Handler();
-  static void GameLoop();
+  ~Handler();
+  void GameLoop();
 };

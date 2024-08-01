@@ -1,12 +1,10 @@
 #include "Handler.h"
 #include "SDL_error.h"
 #include "SDL_events.h"
-#include "SDL_surface.h"
+#include "SDL_render.h"
 #include "SDL_video.h"
 #include <SDL.h>
 #include <iostream>
-
-bool Handler::isRunning = true;
 
 Handler::Handler() {
   if (!init()) {
@@ -14,31 +12,61 @@ Handler::Handler() {
   }
 }
 
+Handler::~Handler() { close(); }
+
 bool Handler::init() {
   bool success = true;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     success = false;
     return success;
   } else {
-    SDL_Window *gWindow =
+    m_window =
         SDL_CreateWindow("Event Window", SDL_WINDOWPOS_CENTERED,
                          SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
-    if (!gWindow) {
+    if (!m_window) {
       success = false;
       return success;
     } else {
-      SDL_Surface *gBackground = SDL_GetWindowSurface(gWindow);
-      SDL_FillRect(gBackground, nullptr,
-                   SDL_MapRGB(gBackground->format, 235, 64, 52));
+      m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
+      if (!m_renderer) {
+        std::cout << "Error creating renderer: " << SDL_GetError() << '\n';
+      }
     }
   }
   return success;
 }
 
+void Handler::close() {
+  SDL_DestroyWindow(m_window);
+  m_window = nullptr;
+  SDL_DestroyRenderer(m_renderer);
+  m_renderer = nullptr;
+  SDL_Quit();
+}
+
+bool Handler::drawBoard() {
+  return true;
+}
 void Handler::GameLoop() {
+  Uint8 red;
+  Uint8 green;
+  Uint8 blue;
   while (isRunning) {
     SDL_Event event;
-    while(SDL_PollEvent(&event)) {
+    if (SDL_PollEvent(&event)) {
+      if (event.type == SDL_QUIT) {
+        // Break out of the loop on quit
+        isRunning = false;
+        break;
+      }
     }
+    // Randomly change the colour
+    red = rand() % 255;
+    green = rand() % 255;
+    blue = rand() % 255;
+    // Fill the screen with the colour
+    SDL_SetRenderDrawColor(m_renderer, red, green, blue, 255);
+    SDL_RenderClear(m_renderer);
+    SDL_RenderPresent(m_renderer);
   }
 }

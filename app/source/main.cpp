@@ -1,5 +1,5 @@
 #include "Chess.h"
 
 int main() {
-  Chess::Start();
+  Chess::Run();
 }

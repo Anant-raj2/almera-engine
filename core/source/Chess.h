@@ -1,9 +1,9 @@
 #pragma once
-#include "Handler.h"
-#include "memory"
+#include <Handler.h>
 
 namespace Chess {
-void Start() {
-  std::unique_ptr<Handler> handler = std::make_unique<Handler>();
-};
+static void Run() {
+  Handler handler = Handler();
+  handler.GameLoop();
+}
 } // namespace Chess
