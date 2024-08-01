@@ -8,16 +8,6 @@ class Handler {
   SDL_Window *m_window;
   SDL_Renderer *m_renderer;
   bool isRunning;
-  int board[8][8] = {
-    {0, 1, 0, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 0, 1, 0},
-    {0, 1, 0, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 0, 1, 0},
-    {0, 1, 0, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 0, 1, 0},
-    {0, 1, 0, 1, 0, 1, 0, 1},
-    {1, 0, 1, 0, 1, 0, 1, 0},
-  };
 
 private:
   bool init();
