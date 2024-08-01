@@ -20,9 +20,9 @@ bool Handler::init() {
     success = false;
     return success;
   } else {
-    m_window =
-        SDL_CreateWindow("Event Window", SDL_WINDOWPOS_CENTERED,
-                         SDL_WINDOWPOS_CENTERED, 600, 600, SDL_WINDOW_SHOWN);
+    m_window = SDL_CreateWindow("Event Window", SDL_WINDOWPOS_UNDEFINED,
+                                SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+                                SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!m_window) {
       success = false;
       return success;
@@ -44,13 +44,35 @@ void Handler::close() {
   SDL_Quit();
 }
 
-bool Handler::drawBoard() {
-  return true;
+void Handler::renderWhite(int last, int k, int i) {
+  SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
+  SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
+  SDL_RenderFillRect(m_renderer, &fillRect);
 }
+
+void Handler::renderBlack(int last, int k, int i) {
+  SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
+  SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
+  SDL_RenderFillRect(m_renderer, &fillRect);
+}
+
+void Handler::drawBoard() {
+  for (int i = 0; i < 8; i++) {
+    for (int k = 0; k < 8; k++) {
+      if (board[i][k] == 0) {
+        SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
+        SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
+        SDL_RenderFillRect(m_renderer, &fillRect);
+      } else {
+        SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
+        SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
+        SDL_RenderFillRect(m_renderer, &fillRect);
+      }
+    }
+  }
+}
+
 void Handler::GameLoop() {
-  Uint8 red;
-  Uint8 green;
-  Uint8 blue;
   while (isRunning) {
     SDL_Event event;
     if (SDL_PollEvent(&event)) {
@@ -60,13 +82,7 @@ void Handler::GameLoop() {
         break;
       }
     }
-    // Randomly change the colour
-    red = rand() % 255;
-    green = rand() % 255;
-    blue = rand() % 255;
-    // Fill the screen with the colour
-    SDL_SetRenderDrawColor(m_renderer, red, green, blue, 255);
-    SDL_RenderClear(m_renderer);
+    drawBoard();
     SDL_RenderPresent(m_renderer);
   }
 }
