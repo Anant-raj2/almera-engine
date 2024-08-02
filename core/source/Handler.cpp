@@ -2,10 +2,6 @@
 #include "SDL_error.h"
 #include "SDL_events.h"
 #include "SDL_rect.h"
-#include "SDL_render.h"
-#include "SDL_video.h"
-#include <SDL.h>
-#include <SDL_image.h>
 #include <iostream>
 
 Handler::Handler() {
@@ -50,6 +46,76 @@ void Handler::close() {
   SDL_Quit();
 }
 
+SDL_Texture* SDL_Handler::loadImage(std::string filename)
+{
+	SDL_Surface* loadedImage = NULL;
+
+	loadedImage = IMG_Load(filename.c_str());
+
+	if (loadedImage == NULL)
+	{
+		std::cout << "couldnt load " << filename << std::endl;
+	}
+
+	SDL_Texture* text = SDL_CreateTextureFromSurface(m_renderer, loadedImage);
+
+	return text;
+}
+
+void SDL_Handler::renderBackground()
+{
+	bool white = true;
+	SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			if (white)
+			{
+				SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+			}
+			else
+			{
+				SDL_SetRenderDrawColor(m_renderer, 155, 103, 60, 255);
+			}
+			white = !white;
+			SDL_Rect rectangle = { i * SCREEN_WIDTH / 8,
+								  j * SCREEN_HEIGHT / 8,
+								  SCREEN_WIDTH / 8,
+								  SCREEN_HEIGHT / 8 };
+			SDL_RenderFillRect(m_renderer, &rectangle);
+		}
+		white = !white;
+	}
+}
+
+void SDL_Handler::undoPieceRender(int x, int y)
+{
+	if ((x % 2 == 0 && y % 2 == 0) || (x % 2 == 1 && y % 2 == 1))
+	{
+		SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+	}
+	else
+	{
+		SDL_SetRenderDrawColor(m_renderer, 155, 103, 60, 255);
+	}
+	SDL_Rect rectangle = { x * SCREEN_WIDTH / 8,
+						  y * SCREEN_HEIGHT / 8,
+						  SCREEN_WIDTH / 8,
+						  SCREEN_HEIGHT / 8 };
+	SDL_RenderFillRect(m_renderer, &rectangle);
+}
+
+void SDL_Handler::cleanUp()
+{
+	SDL_FreeSurface(m_screenSurface);
+	SDL_DestroyWindow(m_window);
+	SDL_DestroyRenderer(m_renderer);
+	SDL_Quit();
+}
+
+
 void Handler::drawBoard() {
   SDL_Rect fillRect;
   for (int k{}; k < CHESS_TAB_HEIGHT; k++) {
@@ -61,7 +127,9 @@ void Handler::drawBoard() {
         i % 2 ? SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255)
               : SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
       }
-      fillRect = {i * 125, k * 125, 125, 125};
+      fillRect = {i * SCREEN_WIDTH / CHESS_TAB_HEIGHT,
+                  k * SCREEN_HEIGHT / CHESS_TAB_HEIGHT, PIECE_WIDTH,
+                  PIECE_HEIGHT};
       SDL_RenderFillRect(m_renderer, &fillRect);
     }
   }
@@ -76,7 +144,11 @@ SDL_Texture *Handler::loadTexture(const char *path) {
 }
 
 void Handler::GameLoop() {
-  SDL_Texture *texture = loadTexture("../assets/pieces/png/Chess_bdt60.png");
+  SDL_Texture *texture =
+      loadTexture("../assets/pieces/png/extra/Chess_bdt60.png");
+  SDL_Rect chessRect = {SCREEN_WIDTH / 8, SCREEN_HEIGHT / 8, PIECE_WIDTH,
+                        PIECE_HEIGHT};
+  drawBoard();
   while (isRunning) {
     SDL_Event event;
     if (SDL_WaitEvent(&event)) {
@@ -86,8 +158,7 @@ void Handler::GameLoop() {
         break;
       }
     }
-    drawBoard();
-    SDL_RenderCopy(m_renderer, texture, NULL, NULL);
+    SDL_RenderCopy(m_renderer, texture, NULL, &chessRect);
     SDL_RenderPresent(m_renderer);
   }
   SDL_DestroyTexture(texture);
