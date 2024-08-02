@@ -5,6 +5,7 @@
 #include "SDL_render.h"
 #include "SDL_video.h"
 #include <SDL.h>
+#include <SDL_image.h>
 #include <iostream>
 
 Handler::Handler() {
@@ -33,6 +34,10 @@ bool Handler::init() {
         std::cout << "Error creating renderer: " << SDL_GetError() << '\n';
       }
     }
+    if (IMG_Init(IMG_INIT_PNG) == 0) {
+      success = false;
+      return success;
+    }
   }
   return success;
 }
@@ -45,34 +50,16 @@ void Handler::close() {
   SDL_Quit();
 }
 
-void Handler::renderWhite(int last, int k, int i) {
-  SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
-  SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
-  SDL_RenderFillRect(m_renderer, &fillRect);
-}
-
-void Handler::renderBlack(int last, int k, int i) {
-  SDL_Rect fillRect = {k * 125, i * 125, 125, 125};
-  SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
-  SDL_RenderFillRect(m_renderer, &fillRect);
-}
-
 void Handler::drawBoard() {
   SDL_Rect fillRect;
   for (int k{}; k < CHESS_TAB_HEIGHT; k++) {
     for (int i{}; i < CHESS_TAB_WIDTH; i++) {
       if (k % 2 == 0) {
-        if (i % 2 == 0) {
-          SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
-        } else {
-          SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
-        }
+        i % 2 ? SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255)
+              : SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
       } else {
-        if (i % 2 == 0) {
-          SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
-        } else {
-          SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
-        }
+        i % 2 ? SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255)
+              : SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
       }
       fillRect = {i * 125, k * 125, 125, 125};
       SDL_RenderFillRect(m_renderer, &fillRect);
@@ -80,10 +67,19 @@ void Handler::drawBoard() {
   }
 }
 
+SDL_Texture *Handler::loadTexture(const char *path) {
+  SDL_Texture *texture = IMG_LoadTexture(m_renderer, path);
+  if (!texture) {
+    std::cout << "Could not load texture" << SDL_GetError() << '\n';
+  }
+  return texture;
+}
+
 void Handler::GameLoop() {
+  SDL_Texture *texture = loadTexture("../assets/pieces/png/Chess_bdt60.png");
   while (isRunning) {
     SDL_Event event;
-    if (SDL_PollEvent(&event)) {
+    if (SDL_WaitEvent(&event)) {
       if (event.type == SDL_QUIT) {
         // Break out of the loop on quit
         isRunning = false;
@@ -91,6 +87,10 @@ void Handler::GameLoop() {
       }
     }
     drawBoard();
+    SDL_RenderCopy(m_renderer, texture, NULL, NULL);
     SDL_RenderPresent(m_renderer);
   }
+  SDL_DestroyTexture(texture);
+  IMG_Quit();
+  close();
 }
