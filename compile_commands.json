@@ -1,13 +1,13 @@
 [
 {
-  "directory": "/home/heyanantraj/Programming/cpp/almera/vendor/bin",
-  "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/core/source -I/home/heyanantraj/Programming/cpp/almera/almera -I/usr/include/SDL2  -o CMakeFiles/core.dir/core/source/Handler.cpp.o -c /home/heyanantraj/Programming/cpp/almera/core/source/Handler.cpp",
+  "directory": "/home/heyanantraj/Programming/cpp/almera/bin",
+  "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/core/source -I/usr/include/SDL2  -o CMakeFiles/core.dir/core/source/Handler.cpp.o -c /home/heyanantraj/Programming/cpp/almera/core/source/Handler.cpp",
   "file": "/home/heyanantraj/Programming/cpp/almera/core/source/Handler.cpp",
   "output": "CMakeFiles/core.dir/core/source/Handler.cpp.o"
 },
 {
-  "directory": "/home/heyanantraj/Programming/cpp/almera/vendor/bin",
-  "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/almera -I/home/heyanantraj/Programming/cpp/almera/core/source -isystem /usr/include/SDL2  -o CMakeFiles/almera.dir/app/source/main.cpp.o -c /home/heyanantraj/Programming/cpp/almera/app/source/main.cpp",
+  "directory": "/home/heyanantraj/Programming/cpp/almera/bin",
+  "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/core/source -isystem /usr/include/SDL2  -o CMakeFiles/almera.dir/app/source/main.cpp.o -c /home/heyanantraj/Programming/cpp/almera/app/source/main.cpp",
   "file": "/home/heyanantraj/Programming/cpp/almera/app/source/main.cpp",
   "output": "CMakeFiles/almera.dir/app/source/main.cpp.o"
 }

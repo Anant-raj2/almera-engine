@@ -1,7 +1,9 @@
 #include "Handler.h"
+#include "SDL.h"
 #include "SDL_error.h"
-#include "SDL_events.h"
-#include "SDL_rect.h"
+#include "SDL_video.h"
+#include <GL/gl.h>
+#include <SDL_opengl.h>
 #include <iostream>
 
 Handler::Handler() {
@@ -15,83 +17,37 @@ Handler::~Handler() { close(); }
 bool Handler::init() {
   bool success = true;
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    std::cout << "Could Not init the video system: " << SDL_GetError() << '\n';
     success = false;
     return success;
-  } else {
-    m_window = SDL_CreateWindow("Event Window", SDL_WINDOWPOS_UNDEFINED,
-                                SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                                SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!m_window) {
-      success = false;
-      return success;
-    } else {
-      m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
-      if (!m_renderer) {
-        std::cout << "Error creating renderer: " << SDL_GetError() << '\n';
-      }
-    }
-    if (IMG_Init(IMG_INIT_PNG) == 0) {
-      success = false;
-      return success;
-    }
   }
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+  window = SDL_CreateWindow(
+      "Chess", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+      SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+  if (window == nullptr) {
+    std::cout << "Could not create window: " << SDL_GetError() << '\n';
+    success = false;
+    return success;
+  }
+
+  glContext = SDL_GL_CreateContext(window);
+  if (glContext == nullptr) {
+    std::cout << "Could not create Opengl Context: " << SDL_GetError() << '\n';
+    success = false;
+    return success;
+  }
+  if (SDL_GL_SetSwapInterval(1) < 0) {
+    std::cout << "Failed to Set VSync! " << SDL_GetError() << '\n';
+  }
+
+  if (!initGL()) {
+    std::cout << "Failed to initialize Opengl: " << SDL_GetError() << '\n';
+    success = false;
+    return success;
+  }
+
   return success;
-}
-
-void Handler::close() {
-  SDL_DestroyWindow(m_window);
-  m_window = nullptr;
-  SDL_DestroyRenderer(m_renderer);
-  m_renderer = nullptr;
-  SDL_Quit();
-}
-
-void Handler::drawBoard() {
-  SDL_Rect fillRect;
-  for (int k{}; k < CHESS_TAB_HEIGHT; k++) {
-    for (int i{}; i < CHESS_TAB_WIDTH; i++) {
-      if (k % 2 == 0) {
-        i % 2 ? SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255)
-              : SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255);
-      } else {
-        i % 2 ? SDL_SetRenderDrawColor(m_renderer, 118, 150, 86, 255)
-              : SDL_SetRenderDrawColor(m_renderer, 238, 238, 210, 255);
-      }
-      fillRect = {i * SCREEN_WIDTH / CHESS_TAB_HEIGHT,
-                  k * SCREEN_HEIGHT / CHESS_TAB_HEIGHT, PIECE_WIDTH,
-                  PIECE_HEIGHT};
-      SDL_RenderFillRect(m_renderer, &fillRect);
-    }
-  }
-}
-
-SDL_Texture *Handler::loadTexture(const char *path) {
-  SDL_Texture *texture = IMG_LoadTexture(m_renderer, path);
-  if (!texture) {
-    std::cout << "Could not load texture" << SDL_GetError() << '\n';
-  }
-  return texture;
-}
-
-void Handler::GameLoop() {
-  SDL_Texture *texture =
-      loadTexture("../assets/pieces/png/extra/Chess_bdt60.png");
-  SDL_Rect chessRect = {SCREEN_WIDTH / 8, SCREEN_HEIGHT / 8, PIECE_WIDTH,
-                        PIECE_HEIGHT};
-  drawBoard();
-  while (isRunning) {
-    SDL_Event event;
-    if (SDL_WaitEvent(&event)) {
-      if (event.type == SDL_QUIT) {
-        // Break out of the loop on quit
-        isRunning = false;
-        break;
-      }
-    }
-    SDL_RenderCopy(m_renderer, texture, NULL, &chessRect);
-    SDL_RenderPresent(m_renderer);
-  }
-  SDL_DestroyTexture(texture);
-  IMG_Quit();
-  close();
 }

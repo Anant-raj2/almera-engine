@@ -1,19 +1,13 @@
 #pragma once
-#include "SDL_render.h"
-#include <SDL_surface.h>
-#include <SDL_video.h>
-#include <cstdlib>
-#include "SDL_render.h"
 #include "SDL_video.h"
 #include <SDL.h>
-#include <SDL_image.h>
 
 class Handler {
 
 public:
-  SDL_Window *m_window;
-  SDL_Renderer *m_renderer;
-  bool isRunning;
+  SDL_Window *window;
+  SDL_GLContext glContext;
+  bool renderQuad = true;
 
 private:
   const int SCREEN_WIDTH = 600;
@@ -26,11 +20,12 @@ private:
 public:
   Handler();
   ~Handler();
-  void GameLoop();
 
 private:
   bool init();
+  bool initGL();
+  void handleKeys(unsigned char key, int x, int y);
+  void update();
+  void render();
   void close();
-  void drawBoard();
-  SDL_Texture* loadTexture(const char* path);
 };
