@@ -1,8 +1,11 @@
 #include "Handler.h"
 #include "SDL.h"
 #include "SDL_error.h"
+#include "SDL_events.h"
+#include "SDL_keyboard.h"
 #include "SDL_video.h"
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <SDL_opengl.h>
 #include <iostream>
 
@@ -44,10 +47,89 @@ bool Handler::init() {
   }
 
   if (!initGL()) {
-    std::cout << "Failed to initialize Opengl: " << SDL_GetError() << '\n';
+    std::cout << "Failed to initialize Opengl: " << '\n';
     success = false;
     return success;
   }
 
   return success;
+}
+
+bool Handler::initGL() {
+  bool success = true;
+  GLenum error = GL_NO_ERROR;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  error = glGetError();
+  if (error != GL_NO_ERROR) {
+    std::cout << "Failed to initialize Opengl: " << gluErrorString(error);
+    success = false;
+  }
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  error = glGetError();
+  if (error != GL_NO_ERROR) {
+    std::cout << "Failed to initialize Opengl: " << gluErrorString(error);
+    success = false;
+  }
+
+  glClearColor(0.f, 0.f, 0.f, 1.f);
+  error = glGetError();
+  if (error != GL_NO_ERROR) {
+    std::cout << "Failed to initialize Opengl: " << gluErrorString(error);
+    success = false;
+  }
+
+  return success;
+}
+
+void Handler::handleKeys(unsigned char key, int x, int y) {
+  if (key == 'q') {
+    renderQuad = !renderQuad;
+  }
+}
+
+void Handler::update() {}
+
+void Handler::render() {
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  if (renderQuad) {
+    glBegin(GL_QUADS);
+    glVertex2f(-0.5f, -0.5f);
+    glVertex2f(0.5f, -0.5f);
+    glVertex2f(0.5f, 0.5f);
+    glVertex2f(-0.5f, 0.5f);
+    glEnd();
+  }
+}
+
+void Handler::GameLoop() {
+  SDL_StartTextInput();
+
+  while (isRunning) {
+    while (SDL_PollEvent(&e) != 0) {
+      if (e.type == SDL_QUIT) {
+        isRunning = false;
+      } else if (e.type == SDL_TEXTINPUT) {
+        int x = 0, y = 0;
+        SDL_GetMouseState(&x, &y);
+        handleKeys(e.text.text[0], x, y);
+      }
+    }
+    render();
+    SDL_GL_SwapWindow(window);
+  }
+  SDL_StopTextInput();
+  close();
+}
+
+void Handler::close() {
+  SDL_DestroyWindow(window);
+  window = nullptr;
+  SDL_Quit();
 }

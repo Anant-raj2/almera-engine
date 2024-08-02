@@ -8,6 +8,7 @@ public:
   SDL_Window *window;
   SDL_GLContext glContext;
   bool renderQuad = true;
+  bool isRunning = true;
 
 private:
   const int SCREEN_WIDTH = 600;
@@ -16,10 +17,12 @@ private:
   const int CHESS_TAB_HEIGHT = 8;
   const int PIECE_WIDTH = SCREEN_WIDTH/8;
   const int PIECE_HEIGHT = SCREEN_HEIGHT/8;
+  SDL_Event e;
 
 public:
   Handler();
   ~Handler();
+  void GameLoop();
 
 private:
   bool init();
