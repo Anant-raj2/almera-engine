@@ -7,6 +7,12 @@
 },
 {
   "directory": "/home/heyanantraj/Programming/cpp/almera/bin",
+  "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/core/source -I/usr/include/SDL2  -o CMakeFiles/core.dir/core/source/Logger.cpp.o -c /home/heyanantraj/Programming/cpp/almera/core/source/Logger.cpp",
+  "file": "/home/heyanantraj/Programming/cpp/almera/core/source/Logger.cpp",
+  "output": "CMakeFiles/core.dir/core/source/Logger.cpp.o"
+},
+{
+  "directory": "/home/heyanantraj/Programming/cpp/almera/bin",
   "command": "/usr/bin/c++  -I/home/heyanantraj/Programming/cpp/almera/core/source -isystem /usr/include/SDL2  -o CMakeFiles/almera.dir/app/source/main.cpp.o -c /home/heyanantraj/Programming/cpp/almera/app/source/main.cpp",
   "file": "/home/heyanantraj/Programming/cpp/almera/app/source/main.cpp",
   "output": "CMakeFiles/almera.dir/app/source/main.cpp.o"

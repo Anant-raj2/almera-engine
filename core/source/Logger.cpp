@@ -1,9 +1,7 @@
+#include <GL/glew.h>
 #include "Logger.h"
-#include <SDL_opengl.h>
-#include <ctime>
 #include <iostream>
 #include <sstream>
-#include <string>
 
 void Logger::SetLogLevel(LogLevels level) { m_LogLevel = level; }
 
@@ -17,7 +15,7 @@ std::string Logger::getLogTime(){
   return logEntry.str();
 }
 
-void Logger::LogError(std::string &msg, std::string &error) {
+void Logger::LogError(std::string msg, std::string &error) {
   if (m_LogLevel <= 2) {
     std::cout << getLogTime() << " [ERROR] " << msg << ": " << error;
   }
